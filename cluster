@@ -1,0 +1,41 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: cluster
+  region: us-east-1
+  version: "1.23"
+
+iam:
+  withOIDC: true
+
+vpc:
+  id: "vpc-*"
+  subnets:
+    private:
+      ap-northeast-2a:
+        id: "subnet-*"
+      ap-northeast-2c:
+        id: "subnet-*"
+
+managedNodeGroups:
+  - name: skiils-app
+    instanceType: c5.large
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 3
+    volumeSize: 20
+    privateNetworking: true
+    ssh:
+      enableSsm: true
+    iam:
+      withAddonPolicies:
+        imageBuilder: true
+        albIngress: true
+        cloudWatch: true
+        autoScaler: true
+    Labels:
+      dedicated: app
+
+# eksctl create cluster -f cluster.yaml
+# eksctl delete cluster --name <yourClusterName> --region us-east-1
